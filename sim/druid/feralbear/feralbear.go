@@ -79,9 +79,6 @@ func (bear *GuardianDruid) ApplyTalents() {
 	bear.Druid.ApplyTalents()
 }
 
-// Bear druids do not proc Windfury Totem. Strip the aura so the sim never
-// registers WF procs, while keeping TotemTwisting intact so that Grace of
-// Air receives the correct ~90% uptime when twisting is enabled.
 func (bear *GuardianDruid) AddPartyBuffs(partyBuffs *proto.PartyBuffs) {
 	if bear.Talents.LeaderOfThePack {
 		// Idol of the Raven Goddess (32387) upgrades the LotP party buff to Improved (+2% crit).
@@ -95,7 +92,12 @@ func (bear *GuardianDruid) AddPartyBuffs(partyBuffs *proto.PartyBuffs) {
 			}
 		}
 	}
+}
 
+// Bear druids do not proc Windfury Totem. Strip it from the bear's own copy of the
+// party buffs only, so the rest of the party keeps it. TotemTwisting is kept so
+// Grace of Air gets the correct ~90% uptime when twisting is enabled.
+func (bear *GuardianDruid) FilterOwnPartyBuffs(partyBuffs *proto.PartyBuffs) {
 	partyBuffs.WindfuryTotem = proto.TristateEffect_TristateEffectMissing
 }
 

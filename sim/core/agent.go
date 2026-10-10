@@ -52,6 +52,12 @@ type Agent interface {
 	ExecuteCustomRotation(sim *Simulation)
 }
 
+// Optionally implemented by an Agent that doesn't receive some of its party's buffs
+// itself. It edits a copy of the party buffs, so the rest of the party keeps them.
+type OwnPartyBuffsFilter interface {
+	FilterOwnPartyBuffs(partyBuffs *proto.PartyBuffs)
+}
+
 type ActionID struct {
 	// Only one of these should be set.
 	SpellID int32

@@ -326,7 +326,12 @@ func (raid *Raid) applyCharacterEffects(raidConfig *proto.Raid) *proto.RaidStats
 			char := player.GetCharacter()
 			char.EnableHealthBar()
 			char.trackChanceOfDeath(playerConfig.HealingModel)
-			partyStats.Players[char.PartyIndex] = char.applyAllEffects(player, raidBuffs, partyBuffs, individualBuffs)
+			ownPartyBuffs := partyBuffs
+			if filter, ok := player.(OwnPartyBuffsFilter); ok {
+				ownPartyBuffs = googleProto.Clone(partyBuffs).(*proto.PartyBuffs)
+				filter.FilterOwnPartyBuffs(ownPartyBuffs)
+			}
+			partyStats.Players[char.PartyIndex] = char.applyAllEffects(player, raidBuffs, ownPartyBuffs, individualBuffs)
 
 			for _, pet := range char.Pets {
 				pet.EnableHealthBar()
